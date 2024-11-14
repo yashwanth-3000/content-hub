@@ -528,3 +528,102 @@ def analyze_crypto_content_Linkedin(results_string):
 #    print("\nTwitter to LinkedIn Conversion Results:")
 #    for key, value in results.items():
 #       print(f"{key}: {value}")
+
+
+class YouTubeContentModel(BaseModel):
+    youtube_title: str
+    youtube_description: str
+    thumbnail_image_description: str
+
+def generate_youtube_content(input_text):
+    """
+    Generates optimized YouTube content including title, description, and thumbnail image description.
+
+    Args:
+        input_text (str): The topic or theme to be used as the basis for the YouTube content.
+    Returns:
+        dict: A dictionary containing the generated YouTube title, description, and thumbnail image description.
+    """
+    # YouTube Content Strategy Task
+    yt_content_strategy_task = Task(
+        description=f"""Create an engaging, SEO-friendly YouTube title and description based on the input topic: {input_text}.
+        Content Requirements:
+        1. Craft a catchy, SEO-friendly YouTube title
+        2. Write a compelling YouTube description that drives clicks""",
+        expected_output="""
+        {{
+        "youtube_title": "Your YouTube title here",
+        "youtube_description": "Your YouTube description here"
+        }}""",
+        output_json=YouTubeContentModel,
+        agent=Agent(
+            role='YouTube Content Strategist',
+            goal='Create engaging, optimized YouTube titles and descriptions',
+            backstory="""You are an expert in YouTube content optimization. 
+            You deeply understand YouTube's algorithm and what makes titles and descriptions successful.
+            Your goal is to craft catchy, SEO-friendly titles and compelling descriptions that drive clicks and views.""",
+            verbose=True
+        )
+    )
+
+    # Thumbnail Design Task
+    thumbnail_design_task = Task(
+        description=f"""Design a visually appealing, thumb-stopping YouTube thumbnail image that aligns with the input topic: {input_text}.
+        Content Requirements:
+        1. Create a thumbnail that is eye-catching and relevant to the video content
+        2. Use colors, fonts, imagery, and composition that align with current trends and best practices""",
+        expected_output="""
+        {{
+        "thumbnail_image_description": "Description of the designed YouTube thumbnail image here"
+        }}""",
+        output_json=YouTubeContentModel,
+        agent=Agent(
+            role='YouTube Thumbnail Designer',
+            goal='Create visually appealing, thumb-stopping YouTube thumbnails',
+            backstory="""You are a professional graphic designer specializing in YouTube thumbnail creation.
+            You understand the psychology of thumbnail design and what makes people click.
+            Your goal is to design thumbnails that are eye-catching, relevant to the video content, and aligned with current trends.""",
+            verbose=True
+        )
+    )
+
+    # Initialize Crew
+    crew = Crew(
+        agents=[],
+        tasks=[yt_content_strategy_task, thumbnail_design_task],
+        verbose=True,
+        process=Process.sequential
+    )
+
+    # Execute workflow
+    result = crew.kickoff()
+
+     # Initialize empty dictionary for results
+    thread_content = {}
+    thread_content["youtube_title"] = ""
+    thread_content["youtube_description"] = ""
+    thread_content["thumbnail_image_description"] = ""
+
+    if hasattr(result, 'tasks_output') and isinstance(result.tasks_output, list):
+        for task_output in result.tasks_output:
+            if task_output.raw:
+                key_value_pairs = {}
+                lines = task_output.raw.splitlines()
+                for line in lines:
+                    if line.strip():
+                        if ':' in line:
+                            key, value = line.split(':', 1)
+                            key = key.strip().strip('"')
+                            value = value.strip().strip('"')
+                            if key in thread_content:
+                                thread_content[key] = value
+
+    return thread_content
+
+
+if __name__ == "__main__":
+    input_text = "How to start investing for beginners"
+    result = generate_youtube_content(input_text)
+    print(f"YouTube Title: {result['youtube_title']}")
+    print(f"YouTube Description: {result['youtube_description']}")
+    print(f"Thumbnail Image Description: {result['thumbnail_image_description']}")

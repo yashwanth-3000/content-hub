@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 5, "column": 0}, "map": {"version":3,"sources":["/turbopack/[project]/app/error.tsx"],"sourcesContent":["\"use client\";\n\nimport { useEffect } from \"react\";\n\nexport default function Error({\n  error,\n  reset,\n}: {\n  error: Error;\n  reset: () => void;\n}) {\n  useEffect(() => {\n    // Log the error to an error reporting service\n    /* eslint-disable no-console */\n    console.error(error);\n  }, [error]);\n\n  return (\n    <div>\n      <h2>Something went wrong!</h2>\n      <button\n        onClick={\n          // Attempt to recover by trying to re-render the segment\n          () => reset()\n        }\n      >\n        Try again\n      </button>\n    </div>\n  );\n}\n"],"names":[],"mappings":";;;;;;AAAA;;;AAIe,SAAS,MAAM,EAC5B,KAAK,EACL,KAAK,EAIN;IACC,CAAA,GAAA,+MAAA,CAAA,YAAS,AAAD,EAAE;QACR,8CAA8C;QAC9C,6BAA6B,GAC7B,QAAQ,KAAK,CAAC;IAChB,GAAG;QAAC;KAAM;IAEV,qBACE,wPAAC;;0BACC,wPAAC;0BAAG;;;;;;0BACJ,wPAAC;gBACC,SACE,wDAAwD;gBACxD,IAAM;0BAET;;;;;;;;;;;;AAKP"}},
+    {"offset": {"line": 46, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"A"}}]
+}
