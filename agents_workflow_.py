@@ -21,9 +21,7 @@ from typing import Optional, Dict, Union
 from crewai import Agent, Crew, Task, Process, crew
 
 
-import os
 
-os.environ['OPENAI_API_KEY'] = 'sk-proj-L5CcdYdlS66D1OFUFAyGT3BlbkFJ2zqDySD8cIbcK1F7BjGn'
 
 
 # Global variables to store results
