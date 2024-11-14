@@ -4,5 +4,10 @@
   "/pricing/page": "app/pricing/page.js",
   "/docs/page": "app/docs/page.js",
   "/blog/page": "app/blog/page.js",
-  "/about/page": "app/about/page.js"
+  "/about/page": "app/about/page.js",
+  "/linkedin/page": "app/linkedin/page.js",
+  "/instagram/page": "app/instagram/page.js",
+  "/youtube/page": "app/youtube/page.js",
+  "/twitter/page": "app/twitter/page.js",
+  "/story/page": "app/story/page.js"
 }

@@ -9,6 +9,7 @@ pnpm-debug.log*
 # Dependency directories
 node_modules/
 bower_components/
+.next/
 
 # Optional npm cache directory
 .npm

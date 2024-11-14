@@ -26,11 +26,11 @@ const TypewriterText = () => {
   const [isDeleting, setIsDeleting] = useState(false)
   
   const texts = [
-    "Create an Instagram post about DeFi yield farming strategies...",
-    "Write a LinkedIn article about NFT market trends...",
-    "Generate a YouTube script about Web3 gaming...",
-    "Compose a Twitter thread about crypto regulations...",
-    "Design content about DAO governance structures..."
+    "Create an Instagram post about the latest tech trends...",
+    "Write a LinkedIn article about digital marketing strategies...",
+    "Generate a YouTube script about productivity hacks...",
+    "Compose a Twitter thread about startup success stories...",
+    "Design content about innovative business models..."
   ]
 
   useEffect(() => {
@@ -55,7 +55,6 @@ const TypewriterText = () => {
 
   return displayText
 }
-
 
 // BentoGrid Components
 const BentoGrid = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
@@ -110,7 +109,7 @@ const features = [
     ),
     name: "Instagram Creator",
     description: "Design eye-catching posts and stories that capture your audience's attention.",
-    href: "docs",
+    href: "instagram",
     cta: "Create Post",
     className: "md:col-span-2 md:row-span-2",
     background: <div className="absolute inset-0 bg-gradient-to-br from-pink-600 to-purple-800 opacity-20" />,
@@ -121,7 +120,7 @@ const features = [
     ),
     name: "Tweet Composer",
     description: "Craft engaging tweets that spark conversations and increase your reach.",
-    href: "blog",
+    href: "twitter",
     cta: "Compose Tweet",
     className: "md:col-span-1 md:row-span-1",
     background: <div className="absolute inset-0 bg-gradient-to-br from-blue-600 to-cyan-500 opacity-20" />,
@@ -132,7 +131,7 @@ const features = [
     ),
     name: "LinkedIn Pulse",
     description: "Generate professional content that resonates with your network and industry.",
-    href: "about",
+    href: "linkedin",
     cta: "Write Article",
     className: "md:col-span-1 md:row-span-1",
     background: <div className="absolute inset-0 bg-gradient-to-br from-blue-800 to-indigo-800 opacity-20" />,
@@ -143,7 +142,7 @@ const features = [
     ),
     name: "YouTube Studio",
     description: "Create compelling video scripts and optimize your content for better engagement.",
-    href: "/create/youtube",
+    href: "youtube",
     cta: "Start Scripting",
     className: "md:col-span-3 md:row-span-1",
     background: <div className="absolute inset-0 bg-gradient-to-br from-red-700 to-pink-700 opacity-20" />,
@@ -171,7 +170,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white font-['SF_Pro_Display',-apple-system,BlinkMacSystemFont,'Segoe_UI',Roboto,Oxygen,Ubuntu,Cantarell,'Open_Sans','Helvetica_Neue',sans-serif]">
       {/* Hero Section */}
       <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0">
@@ -184,10 +183,10 @@ export default function HomePage() {
         <div className="container mx-auto px-4 relative">
           <div className="max-w-4xl mx-auto text-center">
             <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 py-2">
-              Web3 Content Hub
+              Content Hub
             </h1>
             <p className="text-xl md:text-2xl text-gray-400 mb-8">
-              Transform your crypto ideas into engaging Web3 content
+              Transform your ideas into engaging content across platforms
             </p>
 
             <form onSubmit={handleSubmit} className="w-full mb-8">
@@ -214,23 +213,15 @@ export default function HomePage() {
                 </div>
               </div>
               
-              <div className="flex items-center  justify-center gap-4 text-gray-400">
+              <div className="flex items-center justify-center gap-4 text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-blue-500"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
                 <span>Powered by</span>
                 <Link 
-                  href="https://near.ai" 
-                  target="_blank" 
+                  href="https://cloud.sambanova.ai"
+                  target="_blank"
                   className="text-blue-400 hover:text-blue-300 transition-colors"
                 >
-                  near.ai
-                </Link>
-                <span>&</span>
-                <Link 
-                  href="https://masa.finance" 
-                  target="_blank" 
-                  className="text-purple-400 hover:text-purple-300 transition-colors"
-                >
-                  masa
+                  cloud.sambanova.ai
                 </Link>
               </div>
             </form>
@@ -250,7 +241,7 @@ export default function HomePage() {
             </p>
             <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>
-              <span>Intelligent content generation for your Web3 needs</span>
+              <span>Intelligent content generation for your needs</span>
             </div>
           </div>
           
@@ -292,17 +283,17 @@ export default function HomePage() {
               <>
                 <p className="text-xl leading-relaxed text-gray-300">
                   <span className="text-7xl font-serif float-left mr-4 mt-1 leading-none text-blue-500">B</span>
-                  y utilizing scraped <Link href="#" className="text-blue-400 underline decoration-blue-400">Twitter data</Link> provided by MASA, of five active Twitter accounts that focus on crypto, Web3, and blockchain, we developed a platform that automates the generation of crypto, Web3, and blockchain-related content across various social media platforms. By leveraging AI and curated data, our solution provides users with tailored posts for Twitter, Instagram, LinkedIn, and YouTube.
+                  y utilizing advanced AI and data analysis, we've developed a platform that automates the generation of content across various social media platforms. Our solution provides users with tailored posts for Twitter, Instagram, LinkedIn, and YouTube, streamlining the content creation process.
                 </p>
                 <p className="text-lg leading-relaxed text-gray-400">
-                  Our platform aims to streamline content creation for Web3 enthusiasts, marketers, and businesses, enabling them to maintain a consistent and engaging online presence across multiple channels.
+                  Our platform aims to streamline content creation for enthusiasts, marketers, and businesses, enabling them to maintain a consistent and engaging online presence across multiple channels.
                 </p>
               </>
             )}
             {activeIdeaTab === 'details' && (
               <>
                 <p className="text-lg leading-relaxed text-gray-300">
-                  The Web3 Content Hub leverages advanced natural language processing and machine learning algorithms to analyze trends, sentiment, and engagement patterns in the scraped Twitter data. This analysis forms the foundation for generating relevant and timely content tailored to each social media platform's unique requirements and audience expectations.
+                  The Content Hub leverages advanced natural language processing and machine learning algorithms to analyze trends, sentiment, and engagement patterns. This analysis forms the foundation for generating relevant and timely content tailored to each social media platform's unique requirements and audience expectations.
                 </p>
                 <p className="text-lg leading-relaxed text-gray-300">
                   Users can input specific topics, keywords, or themes, and our AI will generate platform-specific content suggestions, complete with hashtags, mentions, and optimized formatting. This approach ensures that the content remains authentic and aligned with the user's brand voice while maximizing reach and engagement across different social media ecosystems.
@@ -343,10 +334,10 @@ export default function HomePage() {
               <>
                 <p className="text-xl leading-relaxed text-gray-300">
                   <span className="text-7xl font-serif float-left mr-4 mt-1 leading-none text-blue-500">O</span>
-                  ur Web3 Content Hub is a cutting-edge platform that leverages AI and data analysis to revolutionize content creation for the crypto, Web3, and blockchain space. We've developed a comprehensive system that automates and optimizes content generation across multiple social media platforms.
+                  ur Content Hub is a cutting-edge platform that leverages AI and data analysis to revolutionize content creation. We've developed a comprehensive system that automates and optimizes content generation across multiple social media platforms.
                 </p>
                 <p className="text-lg leading-relaxed text-gray-400">
-                  By harnessing the power of advanced AI models and real-time data analysis, we've created a seamless user experience that empowers creators, marketers, and businesses in the Web3 ecosystem to maintain a consistent and engaging online presence with minimal effort.
+                  By harnessing the power of advanced AI models and real-time data analysis, we've created a seamless user experience that empowers creators, marketers, and businesses to maintain a consistent and engaging online presence with minimal effort.
                 </p>
               </>
             )}
@@ -355,7 +346,7 @@ export default function HomePage() {
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold text-blue-400">Data-Driven Content Generation</h3>
                   <p className="text-lg leading-relaxed text-gray-300">
-                    Using scraped Twitter data provided by MASA, our AI analyzes key trends, gauges user sentiment, and identifies popular discussions in the crypto, Web3, and blockchain space. This allows us to generate content that's relevant and timely.
+                    Our AI analyzes key trends, gauges user sentiment, and identifies popular discussions across various topics. This allows us to generate content that's relevant and timely.
                   </p>
                 </div>
 
@@ -364,13 +355,13 @@ export default function HomePage() {
                   <div className="space-y-4">
                     {[
                       {
-                        id: 'crew-ai',
-                        title: 'Crew AI Agentic Workflow',
+                        id: 'ai-workflow',
+                        title: 'AI-Powered Workflow',
                         content: 'Ensures a smooth and efficient process for generating content across multiple platforms.'
                       },
                       {
-                        id: 'openai',
-                        title: 'OpenAI for Text Generation',
+                        id: 'text-generation',
+                        title: 'Advanced Text Generation',
                         content: 'Based on the analyzed data, the AI creates high-quality, platform-specific content, including:',
                         list: [
                           { platform: 'Twitter', description: 'Generates tweets and image descriptions that reflect trends and community sentiment.' },
@@ -428,16 +419,16 @@ export default function HomePage() {
                 </div>
 
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-semibold text-blue-400">Flux Schnell for Image Generation</h3>
+                  <h3 className="text-2xl font-semibold text-blue-400">Image Generation</h3>
                   <p className="text-lg leading-relaxed text-gray-300">
-                    The image descriptions generated by the AI are transformed into prompts, which are sent to the Replicate Flux Schnell API. This API generates the actual images for each social media post, ensuring that the visuals perfectly complement the text and resonate with crypto, Web3, and blockchain themes.
+                    The image descriptions generated by the AI are transformed into prompts, which are used to generate actual images for each social media post, ensuring that the visuals perfectly complement the text and resonate with the intended themes.
                   </p>
                 </div>
 
                 <div className="space-y-4">
                   <h3 className="text-2xl font-semibold text-blue-400">Seamless User Experience</h3>
                   <p className="text-lg leading-relaxed text-gray-300">
-                    The platform is designed to make content creation as easy as possible. With minimal input, it automatically generates high-quality, tailored content for each platform by analyzing the Twitter data. This streamlines the process, saving time and effort while ensuring the content is engaging and relevant.
+                    The platform is designed to make content creation as easy as possible. With minimal input, it automatically generates high-quality, tailored content for each platform. This streamlines the process, saving time and effort while ensuring the content is engaging and relevant.
                   </p>
                 </div>
               </div>
@@ -476,19 +467,19 @@ export default function HomePage() {
               <>
                 <p className="text-xl leading-relaxed text-gray-300">
                   <span className="text-7xl font-serif float-left mr-4 mt-1 leading-none text-blue-500">W</span>
-                  hile we've built a powerful content generation platform, there were a few additional features we had planned but couldn't implement due to time constraints. These features would have further enhanced the capabilities and user experience of our Web3 Content Hub.
+                  hile we've built a powerful content generation platform, there were a few additional features we had planned but couldn't implement due to time constraints. These features would have further enhanced the capabilities and user experience of our Content Hub.
                 </p>
                 <p className="text-lg leading-relaxed text-gray-400">
-                  Our vision included real-time data integration, streamlined posting processes, and expanded content types to provide an even more comprehensive solution for Web3 content creators and marketers.
+                  Our vision included real-time data integration, streamlined posting processes, and expanded content types to provide an even more comprehensive solution for content creators and marketers.
                 </p>
               </>
             )}
             {activeWantedTab === 'details' && (
               <div className="space-y-8">
                 <div className="space-y-4">
-                  <h3 className="text-2xl font-semibold text-blue-400">Real-Time Twitter Data Integration</h3>
+                  <h3 className="text-2xl font-semibold text-blue-400">Real-Time Data Integration</h3>
                   <p className="text-lg leading-relaxed text-gray-300">
-                    We wanted to integrate real-time Twitter data to ensure our AI model could keep up with the latest trends, updates, and breaking news in the crypto, Web3, and blockchain space. This would make the content even more timely and relevant.
+                    We wanted to integrate real-time data to ensure our AI model could keep up with the latest trends, updates, and breaking news. This would make the content even more timely and relevant.
                   </p>
                 </div>
 
@@ -514,10 +505,11 @@ export default function HomePage() {
       <footer className="py-8 border-t border-gray-800 bg-black">
         <div className="container mx-auto px-4">
           <p className="text-sm text-gray-500 text-center">
-            © 2024 Web3 Content Hub. All rights reserved.
+            © 2024 Content Hub. All rights reserved.
           </p>
         </div>
       </footer>
     </div>
   )
 }
+  

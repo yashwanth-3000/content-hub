@@ -23,6 +23,26 @@
     "[project]/app/about/page": [
       "static/media/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw-s.p.7b3669ea.woff2",
       "static/media/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA-s.p.b416adcb.woff2"
+    ],
+    "[project]/app/linkedin/page": [
+      "static/media/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw-s.p.7b3669ea.woff2",
+      "static/media/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA-s.p.b416adcb.woff2"
+    ],
+    "[project]/app/instagram/page": [
+      "static/media/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw-s.p.7b3669ea.woff2",
+      "static/media/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA-s.p.b416adcb.woff2"
+    ],
+    "[project]/app/youtube/page": [
+      "static/media/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw-s.p.7b3669ea.woff2",
+      "static/media/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA-s.p.b416adcb.woff2"
+    ],
+    "[project]/app/twitter/page": [
+      "static/media/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw-s.p.7b3669ea.woff2",
+      "static/media/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA-s.p.b416adcb.woff2"
+    ],
+    "[project]/app/story/page": [
+      "static/media/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa1ZL7W0Q5nw-s.p.7b3669ea.woff2",
+      "static/media/uU9NCBsR6Z2vfE9aq3bh3dSDqFGedA-s.p.b416adcb.woff2"
     ]
   },
   "appUsingSizeAdjust": true,
