@@ -27,14 +27,14 @@ const platformIcons = {
 }
 
 interface ProfilePictureProps {
-  platform: string;
+  platform: keyof typeof platformIcons;
 }
 
 const ProfilePicture: React.FC<ProfilePictureProps> = ({ platform }) => {
   return (
     <div className="w-12 h-12 rounded-full bg-black flex items-center justify-center relative overflow-hidden">
       <div className={`absolute inset-0 flex items-center justify-center text-${platform === 'youtube' ? 'red' : 'blue'}-500`}>
-        {platformIcons[platform as keyof typeof platformIcons]()}
+        {platformIcons[platform]()}
       </div>
     </div>
   )
@@ -71,7 +71,7 @@ const TwitterPreview: React.FC<TwitterPreviewProps> = ({ content, imageUrl, user
       [type]: !prev[type],
       stats: {
         ...prev.stats,
-        [type === 'viewed' ? 'views' : `${type}s`]: prev[type] ? prev.stats[type === 'viewed' ? 'views' : `${type}s`] - 1 : prev.stats[type === 'viewed' ? 'views' : `${type}s`] + 1
+        [type === 'viewed' ? 'views' : `${type}s` as keyof typeof prev.stats]: prev[type] ? prev.stats[type === 'viewed' ? 'views' : `${type}s` as keyof typeof prev.stats] - 1 : prev.stats[type === 'viewed' ? 'views' : `${type}s` as keyof typeof prev.stats] + 1
       }
     }))
   }
@@ -341,7 +341,7 @@ const LinkedInPreview: React.FC<LinkedInPreviewProps> = ({ content, imageUrl, us
 
 interface Post {
   id: string;
-  platform: string;
+  platform: keyof typeof platformIcons;
   description?: string;
   caption?: string;
   url: string;
@@ -378,7 +378,7 @@ export default function Component() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<ErrorState | null>(null)
   const [searchTerm, setSearchTerm] = useState("")
-  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([])
+  const [selectedPlatforms, setSelectedPlatforms] = useState<Array<keyof typeof platformIcons>>([])
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
   const [animatedPosts, setAnimatedPosts] = useState<string[]>([])
 
@@ -394,7 +394,7 @@ export default function Component() {
 
     const basePost: Post = {
       id: post.id,
-      platform: post.platform.toLowerCase(),
+      platform: post.platform.toLowerCase() as keyof typeof platformIcons,
       content: post.description || post.caption,
       imageUrl: post.url,
       username: post.user_name || 'Anonymous',
@@ -500,13 +500,13 @@ export default function Component() {
     (selectedPlatforms.length === 0 || selectedPlatforms.includes(post.platform))
   )
 
-  const togglePlatform = (platform: string) => {
+  const togglePlatform = (platform: keyof typeof platformIcons) => {
     setSelectedPlatforms(prev => 
       prev.includes(platform) ? prev.filter(p => p !== platform) : [...prev, platform]
     )
   }
 
-  const getPlatformColor = (platform: string) => {
+  const getPlatformColor = (platform: keyof typeof platformIcons) => {
     switch (platform) {
       case 'youtube':
         return 'bg-red-600'
@@ -560,8 +560,8 @@ export default function Component() {
             className="w-full mb-6 p-2 bg-gray-800 text-gray-300 border border-gray-700 rounded-md focus:outline-none focus:border-gray-500"
           />
           <div className="flex flex-wrap justify-center gap-2">
-            {Object.keys(platformIcons).map(platform => {
-              const Icon = platformIcons[platform as keyof typeof platformIcons]
+            {(Object.keys(platformIcons) as Array<keyof typeof platformIcons>).map(platform => {
+              const Icon = platformIcons[platform]
               const isSelected = selectedPlatforms.includes(platform)
               return (
                 <button
@@ -627,7 +627,7 @@ export default function Component() {
             <div className="p-4 border-b border-gray-800">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold text-white flex items-center">
-                  {platformIcons[selectedPost.platform as keyof typeof platformIcons]()}
+                  {platformIcons[selectedPost.platform]()}
                   <span className="ml-2">{selectedPost.title || selectedPost.username}</span>
                 </h2>
                 <button onClick={() => setSelectedPost(null)} className="text-gray-500 hover:text-white">
