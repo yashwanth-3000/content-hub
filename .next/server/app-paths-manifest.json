@@ -1,7 +1,9 @@
 {
-  "/page": "app/page.js",
+  "/twitter/page": "app/twitter/page.js",
+  "/linkedin/page": "app/linkedin/page.js",
+  "/youtube/page": "app/youtube/page.js",
   "/instagram/page": "app/instagram/page.js",
-  "/gallery/page": "app/gallery/page.js",
   "/_not-found/page": "app/_not-found/page.js",
-  "/supabase_checking/page": "app/supabase_checking/page.js"
+  "/page": "app/page.js",
+  "/gallery/page": "app/gallery/page.js"
 }

@@ -1,13 +1,20 @@
 'use client'
 
 import React, { useState, useRef, useEffect } from 'react'
-import { Youtube, PenLine, MessageSquare, FileText, Terminal, Check, ThumbsUp, ThumbsDown, Share2, Scissors, Bookmark, MoreHorizontal } from 'lucide-react'
+import { Youtube, PenLine, MessageSquare, FileText, Terminal, Check, ThumbsUp, ThumbsDown, Share2, Scissors, Bookmark, MoreHorizontal, Save, X } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { createClient } from '@supabase/supabase-js'
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_KEY!
+)
 
 const styles = {
   container: {
     minHeight: '100vh',
-    backgroundColor: '#000000', // Changed from '#0F0F0F' to '#000000'
+    backgroundColor: '#000000',
     color: 'white',
     fontFamily: 'Roboto, Arial, sans-serif',
     padding: '20px',
@@ -58,7 +65,7 @@ const styles = {
   videoContainer: {
     position: 'relative' as const,
     width: '100%',
-    paddingTop: '56.25%', // 16:9 aspect ratio
+    paddingTop: '56.25%',
     borderRadius: '12px',
     overflow: 'hidden',
   },
@@ -193,6 +200,43 @@ const styles = {
       error: '#ef4444',
     }[type],
   }),
+  generatedImage: {
+    width: '100%',
+    height: 'auto',
+    borderRadius: '12px',
+    marginTop: '20px',
+  },
+  saveDiscardContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    marginTop: '20px',
+  },
+  saveButton: {
+    backgroundColor: '#065fd4',
+    color: 'white',
+    padding: '10px 16px',
+    border: 'none',
+    borderRadius: '18px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
+  discardButton: {
+    backgroundColor: 'transparent',
+    color: '#909090',
+    padding: '10px 16px',
+    border: '1px solid #909090',
+    borderRadius: '18px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+  },
 }
 
 const InputSection: React.FC<{
@@ -245,7 +289,26 @@ const YouTubePreview: React.FC<{
   onChannelNameChange: (name: string) => void;
   onTitleChange: (title: string) => void;
   onDescriptionChange: (description: string) => void;
-}> = ({ title, description, channelName, onChannelNameChange, onTitleChange, onDescriptionChange }) => {
+  thumbnailUrl: string | null;
+  isTypingTitle: boolean;
+  isTypingDescription: boolean;
+  isDescriptionVisible: boolean;
+  setIsTypingTitle: (isTyping: boolean) => void;
+  setIsTypingDescription: (isTyping: boolean) => void;
+}> = ({ 
+  title, 
+  description, 
+  channelName, 
+  onChannelNameChange, 
+  onTitleChange, 
+  onDescriptionChange, 
+  thumbnailUrl, 
+  isTypingTitle, 
+  isTypingDescription, 
+  isDescriptionVisible,
+  setIsTypingTitle,
+  setIsTypingDescription 
+}) => {
   const [isSubscribed, setIsSubscribed] = useState(false)
   const [likes, setLikes] = useState(3300)
   const [isLiked, setIsLiked] = useState(false)
@@ -256,6 +319,8 @@ const YouTubePreview: React.FC<{
   const [tempChannelName, setTempChannelName] = useState(channelName)
   const [tempTitle, setTempTitle] = useState(title)
   const [tempDescription, setTempDescription] = useState(description)
+  const [displayedTitle, setDisplayedTitle] = useState('')
+  const [displayedDescription, setDisplayedDescription] = useState('')
 
   useEffect(() => {
     setTempTitle(title)
@@ -264,6 +329,40 @@ const YouTubePreview: React.FC<{
   useEffect(() => {
     setTempDescription(description)
   }, [description])
+
+  useEffect(() => {
+    if (isTypingTitle) {
+      let i = 0
+      const interval = setInterval(() => {
+        setDisplayedTitle(title.slice(0, i))
+        i++
+        if (i > title.length) {
+          clearInterval(interval)
+          setIsTypingTitle(false)
+        }
+      }, 50)
+      return () => clearInterval(interval)
+    } else {
+      setDisplayedTitle(title)
+    }
+  }, [title, isTypingTitle, setIsTypingTitle])
+
+  useEffect(() => {
+    if (isTypingDescription) {
+      let i = 0
+      const interval = setInterval(() => {
+        setDisplayedDescription(description.slice(0, i))
+        i++
+        if (i > description.length) {
+          clearInterval(interval)
+          setIsTypingDescription(false)
+        }
+      }, 20)
+      return () => clearInterval(interval)
+    } else {
+      setDisplayedDescription(description)
+    }
+  }, [description, isTypingDescription, setIsTypingDescription])
 
   const handleSubscribe = () => {
     setIsSubscribed(!isSubscribed)
@@ -322,7 +421,7 @@ const YouTubePreview: React.FC<{
     <div>
       <div style={styles.videoContainer}>
         <img
-          src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/Screenshot%202024-11-14%20at%207.39.07%E2%80%AFPM-OS69giPdyDl9HY3Lb64CShH9UsSrt6.png"
+          src={thumbnailUrl || "https://i.imgur.com/4Z3mGfU.jpeg"}
           alt="Video thumbnail"
           style={styles.videoImage}
         />
@@ -338,7 +437,7 @@ const YouTubePreview: React.FC<{
           />
         </form>
       ) : (
-        <h1 style={styles.videoTitle} onClick={handleTitleEdit}>{title}</h1>
+        <h1 style={styles.videoTitle} onClick={handleTitleEdit}>{displayedTitle}</h1>
       )}
       <div style={styles.channelInfo}>
         <div style={styles.channelDetails}>
@@ -431,7 +530,19 @@ const YouTubePreview: React.FC<{
       </div>
       <div style={styles.description}>
         <p>48K views • 3 years ago</p>
-        {isEditingDescription ? (
+        {!isEditingDescription && (
+          <p 
+            onClick={handleDescriptionEdit} 
+            style={{
+              whiteSpace: 'pre-wrap',
+              opacity: isDescriptionVisible ? 1 : 0,
+              transition: 'opacity 0.5s ease-in-out'
+            }}
+          >
+            {displayedDescription}
+          </p>
+        )}
+        {isEditingDescription && (
           <form onSubmit={handleDescriptionSubmit}>
             <textarea
               value={tempDescription}
@@ -443,8 +554,6 @@ const YouTubePreview: React.FC<{
               Save
             </button>
           </form>
-        ) : (
-          <p onClick={handleDescriptionEdit} style={{whiteSpace: 'pre-wrap'}}>{description}</p>
         )}
       </div>
     </div>
@@ -477,16 +586,20 @@ const TerminalWindow: React.FC<{
 }
 
 export default function Component() {
-  const [userPrompt, setUserPrompt] = useState("Moving away from competition can get you to the top | Varun Mayya | TEDxDSC")
+  const [userPrompt, setUserPrompt] = useState("")
   const [generatedTitle, setGeneratedTitle] = useState("")
-  const [generatedScript, setGeneratedScript] = useState("")
+  const [generatedDescription, setGeneratedDescription] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [terminalLogs, setTerminalLogs] = useState<{ message: string; timestamp: string; type: 'info' | 'process' | 'success' | 'error' }[]>([])
   const terminalRef = useRef<HTMLDivElement | null>(null)
-  const [description, setDescription] = useState("")
   const [channelName, setChannelName] = useState("TEDx Talks")
-  const [isTyping, setIsTyping] = useState(false)
+  const [isTypingTitle, setIsTypingTitle] = useState(false)
+  const [isTypingDescription, setIsTypingDescription] = useState(false)
+  const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(null)
+  const [isDescriptionVisible, setIsDescriptionVisible] = useState(false)
+  const [showDialog, setShowDialog] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -505,41 +618,72 @@ export default function Component() {
       setError(null)
       setTerminalLogs([])
       setGeneratedTitle("")
-      setGeneratedScript("")
-      setDescription("")
+      setGeneratedDescription("")
+      setThumbnailUrl(null)
+      setIsTypingTitle(false)
+      setIsTypingDescription(false)
+      setIsDescriptionVisible(false)
 
       try {
         addLog('Initializing generation process...', 'process')
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        addLog('Analyzing user prompt...', 'process')
-        await new Promise(resolve => setTimeout(resolve, 1500))
-        addLog('Generating YouTube content...', 'process')
-        await new Promise(resolve => setTimeout(resolve, 2500))
+        
+        // Call the YouTube content generation API
+        const youtubeResponse = await fetch('http://3.129.88.226:5000/youtube', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ input_text: userPrompt }),
+        })
 
-        setIsTyping(true)
-        setGeneratedTitle(userPrompt)
-        setGeneratedScript(`In this inspiring TEDx talk, Varun Mayya, one of the youngest entrepreneurs in India to raise venture capital funding, shares his insights on achieving success by moving away from competition. Here are the key points from his talk:
+        if (!youtubeResponse.ok) {
+          throw new Error(`HTTP error! status: ${youtubeResponse.status}`)
+        }
 
-1. Importance of exploration: Varun emphasizes the need to explore different fields and industries to find unique opportunities.
+        const youtubeResult = await youtubeResponse.json()
 
-2. Choosing the right path: He discusses how to identify and choose the most promising direction for your career or business.
+        if (youtubeResult.error) {
+          throw new Error(youtubeResult.error)
+        }
 
-3. Obsession and focus: Varun stresses the importance of becoming obsessed with your chosen path and focusing intensely on it.
+        addLog('YouTube content generated successfully', 'success')
 
-4. Career growth strategy: He explains how moving away from competition can accelerate your career growth and lead you to the top of your field.
+        // Set the generated title and start its animation
+        setGeneratedTitle(youtubeResult.title || "")
+        setIsTypingTitle(true)
 
-5. Freelancing and industry mashups: Varun shares his views on how freelancing and combining different industries will shape the future of work.
+        // Set the generated description and start its animation after a short delay
+        if (youtubeResult.description) {
+          addLog('Description generated successfully', 'success')
+          setTimeout(() => {
+            setGeneratedDescription(youtubeResult.description || "")
+            setIsTypingDescription(true)
+            setIsDescriptionVisible(true)
+          }, 1000) // Start description animation 1 second after title
+        } else {
+          addLog('No description was generated', 'info')
+        }
 
-6. Personal experience: Throughout the talk, he uses his own life experiences as examples to illustrate his points.
+        // Generate image
+        if (youtubeResult.thumbnail) {
+          addLog('Generating image...', 'process')
+          const imageResponse = await fetch('http://3.129.88.226:5000/generate_image_yt', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ prompt: youtubeResult.thumbnail }),
+          })
 
-7. Book insights: Varun touches upon ideas from his book, "Pyjama Profit," which likely contains more detailed strategies on career growth and entrepreneurship.
+          if (!imageResponse.ok) {
+            throw new Error(`HTTP error! status: ${imageResponse.status}`)
+          }
 
-8. Future of work: He discusses how the landscape of work is changing and how individuals can position themselves for success in this evolving environment.
+          const imageResult = await imageResponse.json()
+          setThumbnailUrl(imageResult.image_url)
+          addLog('Image generated successfully', 'success')
+        }
 
-This talk is particularly relevant for young professionals, aspiring entrepreneurs, and anyone looking to accelerate their career growth by thinking differently about competition and opportunity.`)
-        setDescription("Varun Mayya, one of the youngest entrepreneurs in India to raise venture capital funding, draws a path for all those who want to succeed. Previously having found JobSpire, and currently the CEO of Avalon Labs, Varun takes his own life as an example in the talk. He goes on to explain the same by focusing on the importance of exploring, choosing, and then obsessing about that one step that can boost your career growth. His talk revolves around his recently authored book, Pyjama Profit. He gives insights on how freelancing and mashing of industries are expected to be the future. He points out how moving away from competition can get you to the top.")
-
-        addLog('YouTube content generated successfully ✓', 'success')
       } catch (error: unknown) {
         if (error instanceof Error) {
           addLog(`Error: ${error.message}`, 'error')
@@ -550,9 +694,54 @@ This talk is particularly relevant for young professionals, aspiring entrepreneu
         }
       } finally {
         setIsLoading(false)
-        setTimeout(() => setIsTyping(false), 5000) // Stop typing effect after 5 seconds
       }
     }
+  }
+
+  const handleSave = () => {
+    setShowDialog(true)
+  }
+
+  const handleConfirmSave = async () => {
+    setIsSaving(true)
+    addLog('Saving content to Supabase...', 'process')
+
+    try {
+      const { data, error } = await supabase
+        .from('content_gallery')
+        .insert([
+          {
+            platform: 'YouTube',
+            caption: generatedTitle,
+            description: generatedDescription,
+            url: thumbnailUrl,
+            user_name: channelName,
+          },
+        ])
+
+      if (error) {
+        throw error
+      }
+
+      addLog('Content saved successfully', 'success')
+      setShowDialog(false)
+    } catch (error: any) {
+      addLog(`Error saving content: ${error.message}`, 'error')
+      setError(`Error saving content: ${error.message}`)
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const handleCancelSave = () => {
+    setShowDialog(false)
+  }
+
+  const handleDiscard = () => {
+    setGeneratedTitle('')
+    setGeneratedDescription('')
+    setThumbnailUrl(null)
+    setIsDescriptionVisible(false)
   }
 
   return (
@@ -581,16 +770,16 @@ This talk is particularly relevant for young professionals, aspiring entrepreneu
               value={generatedTitle}
               onChange={() => {}}
               placeholder="Your generated title will appear here..."
-              isTyping={isTyping}
+              isTyping={isTypingTitle}
             />
 
             <InputSection
-              title="Generated Script"
+              title="Generated Description"
               icon={<FileText size={20} color="#FF0000" />}
-              value={generatedScript}
+              value={generatedDescription}
               onChange={() => {}}
-              placeholder="Your generated script will appear here..."
-              isTyping={isTyping}
+              placeholder="Your generated description will appear here..."
+              isTyping={isTypingDescription}
             />
 
             <motion.button
@@ -642,16 +831,94 @@ This talk is particularly relevant for young professionals, aspiring entrepreneu
             <div style={{ position: 'sticky', top: '20px' }}>
               <YouTubePreview
                 title={generatedTitle}
-                description={description}
+                description={generatedDescription}
                 channelName={channelName}
                 onChannelNameChange={setChannelName}
                 onTitleChange={setGeneratedTitle}
-                onDescriptionChange={setDescription}
+                onDescriptionChange={setGeneratedDescription}
+                thumbnailUrl={thumbnailUrl}
+                isTypingTitle={isTypingTitle}
+                isTypingDescription={isTypingDescription}
+                isDescriptionVisible={isDescriptionVisible}
+                setIsTypingTitle={setIsTypingTitle}
+                setIsTypingDescription={setIsTypingDescription}
               />
+              <div style={styles.saveDiscardContainer}>
+                <motion.button
+                  onClick={handleSave}
+                  style={styles.saveButton}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Save size={16} />
+                  Save
+                </motion.button>
+                <motion.button
+                  onClick={handleDiscard}
+                  style={styles.discardButton}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <X size={16} />
+                  Discard
+                </motion.button>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {showDialog && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000,
+        }}>
+          <div style={{
+            backgroundColor: '#262626',
+            padding: '24px',
+            borderRadius: '8px',
+            maxWidth: '400px',
+            width: '100%',
+          }}>
+            <h2 style={{ color: '#e5e5e5', marginBottom: '16px' }}>Save to Gallery</h2>
+            <p style={{ color: '#a0a0a0', marginBottom: '24px' }}>Are you sure you want to save this post to the gallery?</p>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <motion.button
+                onClick={handleCancelSave}
+                style={{
+                  ...styles.discardButton,
+                  padding: '8px 16px',
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={isSaving}
+              >
+                Cancel
+              </motion.button>
+              <motion.button
+                onClick={handleConfirmSave}
+                style={{
+                  ...styles.saveButton,
+                  padding: '8px 16px',
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                disabled={isSaving}
+              >
+                {isSaving ? 'Saving...' : 'Confirm'}
+              </motion.button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

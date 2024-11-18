@@ -3,6 +3,15 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { Heart, MessageCircle, Send, Bookmark, MoreHorizontal, Instagram, PenLine, MessageSquare, Terminal, Check } from 'lucide-react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
+
+const globalStyles = `
+  @keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+`
 
 const styles = {
   container: {
@@ -131,6 +140,10 @@ const previewStyles = {
     height: '32px',
     borderRadius: '50%',
     backgroundColor: '#262626',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    overflow: 'hidden',
   },
   imageContainer: {
     width: '400px',
@@ -219,7 +232,8 @@ const InstagramPreview: React.FC<{
   username: string;
   onUsernameChange: (name: string) => void;
   onContentChange: (content: string) => void;
-}> = ({ content, imageUrl, username, onUsernameChange, onContentChange }) => {
+  isTyping: boolean;
+}> = ({ content, imageUrl, username, onUsernameChange, onContentChange, isTyping }) => {
   const [isLiked, setIsLiked] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [likeCount, setLikeCount] = useState(9311)
@@ -261,7 +275,14 @@ const InstagramPreview: React.FC<{
     <div style={previewStyles.container}>
       <div style={previewStyles.header}>
         <div style={previewStyles.userInfo}>
-          <div style={previewStyles.avatar}></div>
+          <div style={previewStyles.avatar}>
+            <Image
+              src="/instagram-logo.png"
+              alt="Instagram logo"
+              width={32}
+              height={32}
+            />
+          </div>
           {isEditingUsername ? (
             <form onSubmit={handleUsernameSubmit}>
               <input
@@ -292,9 +313,11 @@ const InstagramPreview: React.FC<{
       </div>
 
       <div style={previewStyles.imageContainer}>
-        <img 
+        <Image 
           src={imageUrl} 
           alt="Generated content" 
+          width={400}
+          height={400}
           style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover' }} 
         />
       </div>
@@ -315,6 +338,7 @@ const InstagramPreview: React.FC<{
       </div>
 
       <div style={previewStyles.content}>
+        <span style={{ fontWeight: '600', marginRight: '8px' }}>{username}</span>
         {isEditingContent ? (
           <form onSubmit={handleContentSubmit}>
             <textarea
@@ -338,8 +362,9 @@ const InstagramPreview: React.FC<{
             </motion.button>
           </form>
         ) : (
-          <div onClick={handleContentEdit} style={{whiteSpace: 'pre-wrap', cursor: 'pointer'}}>
+          <div onClick={handleContentEdit} style={{whiteSpace: 'pre-wrap', cursor: 'pointer', maxHeight: '200px', overflowY: 'auto'}}>
             {content}
+            {isTyping && <span style={{animation: 'blink 0.7s infinite'}}>|</span>}
           </div>
         )}
       </div>
@@ -375,14 +400,14 @@ const TerminalWindow: React.FC<{
 export default function Component() {
   const [userPrompt, setUserPrompt] = useState("")
   const [generatedContent, setGeneratedContent] = useState("Share your story—capture moments that matter.")
-  const [generatedImage, setGeneratedImage] = useState("https://picsum.photos/400/400")
+  const [generatedImage, setGeneratedImage] = useState("/placeholder.svg?height=400&width=400")
   const [isLoading, setIsLoading] = useState(false)
   const [isImageLoading, setIsImageLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [terminalLogs, setTerminalLogs] = useState<{ message: string; timestamp: string; type: 'info' | 'process' | 'success' | 'error' }[]>([])
   const terminalRef = useRef<HTMLDivElement | null>(null)
   const [username, setUsername] = useState("instagrammer")
-  const style = "instagram"
+  const [isTyping, setIsTyping] = useState(false)
 
   useEffect(() => {
     if (terminalRef.current) {
@@ -396,12 +421,29 @@ export default function Component() {
   }
 
   const generateImage = async (imageDescription: string) => {
-    addLog('Starting image generation...', 'process')
-    await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate API delay
-    const dummyImageUrl = `https://picsum.photos/seed/${Math.random()}/400/400`
-    addLog('Image generated successfully ✓', 'success')
-    setGeneratedImage(dummyImageUrl)
-    setIsImageLoading(false)
+    try {
+      addLog('Starting image generation...', 'process')
+      const imageResponse = await fetch('http://3.129.88.226:5000/generate_image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: imageDescription }),
+      })
+
+      if (!imageResponse.ok) {
+        throw new Error(`HTTP error! status: ${imageResponse.status}`)
+      }
+
+      const imageResult = await imageResponse.json()
+      addLog('Image generated successfully ✓', 'success')
+      setGeneratedImage(imageResult.image_url)
+    } catch (error) {
+      addLog('Image generation failed', 'error')
+      setError('Image generation failed')
+    } finally {
+      setIsImageLoading(false)
+    }
   }
 
   const handleGenerate = async () => {
@@ -413,17 +455,48 @@ export default function Component() {
       
       try {
         addLog('Initializing generation process...', 'process')
-        await new Promise(resolve => setTimeout(resolve, 1500)) // Simulate API delay
         
-        addLog('Analyzing content...', 'process')
-        await new Promise(resolve => setTimeout(resolve, 2000)) // Simulate API delay
+        // Call the Instagram content generation API
+        const instagramResponse = await fetch('http://3.129.88.226:5000/instagram', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ input_text: userPrompt }),
+        });
 
-        const dummyCaption = `📸 Capturing life's beautiful moments!\n\n${userPrompt}\n\nWhat's your favorite way to make memories? Share in the comments below! 👇\n\n#LifeMoments #InstaInspiration #DailyJoy`
-        setGeneratedContent(dummyCaption)
+        if (!instagramResponse.ok) {
+          throw new Error(`HTTP error! status: ${instagramResponse.status}`)
+        }
+
+        const instagramResult = await instagramResponse.json();
+        console.log('Instagram API response:', instagramResult);
+
+        if (instagramResult.error) {
+          throw new Error(instagramResult.error)
+        }
+
+        setIsTyping(true)
+        setGeneratedContent("")
+        const caption = instagramResult.caption || "Share your story—capture moments that matter."
+        let i = 0
+        const typingInterval = setInterval(() => {
+          if (i < caption.length) {
+            setGeneratedContent(prev => prev + caption[i])
+            i++
+          } else {
+            clearInterval(typingInterval)
+            setIsTyping(false)
+          }
+        }, 50)
+
         setIsLoading(false)
         addLog('Instagram caption generated successfully ✓', 'success')
 
-        generateImage(userPrompt)
+        // Generate image using the image description
+        if (instagramResult.image_description) {
+          await generateImage(instagramResult.image_description)
+        }
 
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -517,10 +590,12 @@ export default function Component() {
               username={username}
               onUsernameChange={handleUsernameChange}
               onContentChange={handleContentChange}
+              isTyping={isTyping}
             />
           </div>
         </div>
       </div>
+      <style jsx global>{globalStyles}</style>
     </div>
   )
 }

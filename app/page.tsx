@@ -1,24 +1,9 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from "next/link"
-
-// Inline Input component
-const Input = ({ className = '', ...props }: { className?: string; [key: string]: any }) => (
-  <input
-    className={`flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}
-    {...props}
-  />
-)
-
-// Inline Button component
-const Button = ({ className = '', ...props }: { className?: string; [key: string]: any }) => (
-  <button
-    className={`inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 ${className}`}
-    {...props}
-  />
-)
+import { ArrowRight } from 'lucide-react'
 
 const TypewriterText = () => {
   const [currentTextIndex, setCurrentTextIndex] = useState(0)
@@ -56,7 +41,6 @@ const TypewriterText = () => {
   return displayText
 }
 
-// BentoGrid Components
 const BentoGrid = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => {
   return (
     <div className={`grid w-full auto-rows-[16rem] grid-cols-1 md:grid-cols-3 gap-4 ${className}`}>
@@ -90,18 +74,17 @@ const BentoCard = ({
       <p className="max-w-lg text-sm text-neutral-400">{description}</p>
     </div>
     <div className="pointer-events-none absolute bottom-0 flex w-full translate-y-10 transform-gpu flex-row items-center p-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-      <Button variant="ghost" size="sm" className="pointer-events-auto text-neutral-300 hover:text-neutral-100 hover:bg-neutral-800">
+      <button className="pointer-events-auto text-neutral-300 hover:text-neutral-100 hover:bg-neutral-800 px-3 py-1 rounded text-sm">
         <Link href={href}>
           {cta}
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2 h-4 w-4"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-2 h-4 w-4 inline"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
         </Link>
-      </Button>
+      </button>
     </div>
     <div className="pointer-events-none absolute inset-0 transform-gpu transition-all duration-300 group-hover:bg-neutral-800/50" />
   </div>
 )
 
-// Features Data
 const features = [
   {
     Icon: () => (
@@ -149,7 +132,6 @@ const features = [
   },
 ]
 
-// Main Component
 export default function HomePage() {
   const [prompt, setPrompt] = useState<string>('')
   const [isLoading, setIsLoading] = useState<boolean>(false)
@@ -162,7 +144,19 @@ export default function HomePage() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsLoading(true)
-    router.push(`/story?prompt=${encodeURIComponent(prompt)}`)
+    
+    const lowercasePrompt = prompt.toLowerCase()
+    if (lowercasePrompt.includes('instagram') || lowercasePrompt.includes('insta')) {
+      router.push('/instagram')
+    } else if (lowercasePrompt.includes('youtube') || lowercasePrompt.includes('yt')) {
+      router.push('/youtube')
+    } else if (lowercasePrompt.includes('twitter') || lowercasePrompt.includes('tweet')) {
+      router.push('/twitter')
+    } else if (lowercasePrompt.includes('linkedin')) {
+      router.push('/linkedin')
+    } else {
+      router.push(`/story?prompt=${encodeURIComponent(prompt)}`)
+    }
   }
 
   const toggleAccordion = (id: string) => {
@@ -193,23 +187,23 @@ export default function HomePage() {
               <div className="relative group mb-4">
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-pink-500/20 rounded-2xl blur-xl group-hover:blur-2xl transition-all duration-300" />
                 <div className="relative flex items-center bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-700/50 p-2">
-                  <Input
+                  <input
                     type="text"
                     value={prompt}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPrompt(e.target.value)}
                     placeholder={TypewriterText()}
-                    className="flex-grow border-0 bg-transparent text-white placeholder-gray-400"
+                    className="flex-grow border-0 bg-transparent text-white placeholder-gray-400 focus:outline-none focus:ring-0"
                   />
-                  <Button
+                  <button
                     type="submit"
                     disabled={isLoading}
-                    className="ml-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity"
+                    className="ml-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-xl flex items-center gap-2 hover:opacity-90 transition-opacity px-4 py-2 text-sm font-medium"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="m6 9 6 6 6-6"/></svg>
                     <span>
                       {isLoading ? 'Generating...' : 'Generate'}
                     </span>
-                  </Button>
+                  </button>
                 </div>
               </div>
               
@@ -250,6 +244,87 @@ export default function HomePage() {
               <BentoCard key={feature.name} {...feature} />
             ))}
           </BentoGrid>
+        </div>
+      </section>
+
+      {/* Gallery Section */}
+      <section className="py-20 bg-black">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+              Your Content Gallery
+            </h2>
+            <p className="text-xl text-gray-400 mb-8">
+              Browse and manage your AI-generated content across platforms
+            </p>
+            <Link href="/gallery">
+              <button className="group px-4 py-2 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity flex items-center justify-center space-x-2 mx-auto">
+                <span>View Gallery</span>
+                <ArrowRight className="w-4 h-4 transform group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+          </div>
+
+          <div className="relative">
+            {/* Image Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {/* Row 1 */}
+              <div className="space-y-4">
+                <div className="overflow-hidden rounded-lg bg-gradient-to-br from-blue-500/30 to-purple-500/30">
+                  <img src="https://i.imgur.com/O99l9on.png" alt="Placeholder image" className="w-full aspect-square object-cover" />
+                </div>
+              </div>
+
+              {/* Row 2 */}
+              <div className="space-y-4">
+                <div className="overflow-hidden rounded-lg bg-gradient-to-br from-pink-500/30 to-blue-500/30">
+                  <iframe
+                    className="w-full aspect-video"
+                    src="https://youtube.com/shorts/L1IKSu2iMqo?si=O3R0TEZcis46oPJV"
+                    title="YouTube video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <div className="overflow-hidden rounded-lg bg-gradient-to-br from-blue-500/30 to-purple-500/30">
+                  <img src="https://i.imgur.com/3xxPzIs.png" alt="Placeholder image" className="w-full aspect-square object-cover" />
+                </div>
+              </div>
+
+              {/* Row 3 */}
+              <div className="space-y-4">
+                <div className="overflow-hidden rounded-lg bg-gradient-to-br from-purple-500/30 to-pink-500/30">
+                  <img src="/placeholder.svg?height=300&width=300" alt="Placeholder image" className="w-full aspect-square object-cover" />
+                </div>
+                <div className="overflow-hidden rounded-lg bg-gradient-to-br from-pink-500/30 to-blue-500/30">
+                  <img src="/placeholder.svg?height=300&width=300" alt="Placeholder image" className="w-full aspect-square object-cover" />
+                </div>
+              </div>
+
+              {/* Row 4 */}
+              <div className="space-y-4">
+                <div className="overflow-hidden rounded-lg bg-gradient-to-br from-blue-500/30 to-purple-500/30">
+                  <iframe
+                    className="w-full aspect-[9/16]"
+                    src="https://youtu.be/y6oMutwJQCw?si=BmCpD9uTDUjMBJrb"
+                    title="YouTube video"
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <div className="overflow-hidden rounded-lg bg-gradient-to-br from-purple-500/30 to-pink-500/30">
+                  <img src="/placeholder.svg?height=300&width=300" alt="Placeholder image" className="w-full aspect-square object-cover" />
+                </div>
+              </div>
+            </div>
+
+            {/* Badge */}
+            <div className="absolute -right-4 top-4 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white p-4 rounded-full max-w-[150px] text-center text-sm font-semibold transform rotate-12">
+              AI-Powered Content
+            </div>
+          </div>
         </div>
       </section>
 
@@ -512,4 +587,3 @@ export default function HomePage() {
     </div>
   )
 }
-  

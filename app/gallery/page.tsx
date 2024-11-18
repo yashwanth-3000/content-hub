@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { createClient } from '@supabase/supabase-js'
-import { MessageCircle, Repeat2, Heart, BarChart2, Share, ThumbsUp, ThumbsDown, Send } from 'lucide-react'
+import { MessageCircle, Repeat2, Heart, BarChart2, Share, ThumbsUp, ThumbsDown, Send, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const platformIcons = {
   twitter: () => (
@@ -381,6 +381,8 @@ export default function Component() {
   const [selectedPlatforms, setSelectedPlatforms] = useState<Array<keyof typeof platformIcons>>([])
   const [selectedPost, setSelectedPost] = useState<Post | null>(null)
   const [animatedPosts, setAnimatedPosts] = useState<string[]>([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const postsPerPage = 9
 
   // Transform Supabase data to match our UI format
   const transformPost = (post: Post): Post => {
@@ -500,6 +502,13 @@ export default function Component() {
     (selectedPlatforms.length === 0 || selectedPlatforms.includes(post.platform))
   )
 
+  const indexOfLastPost = currentPage * postsPerPage
+  const indexOfFirstPost = indexOfLastPost - postsPerPage
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost)
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage)
+
+  const paginate = (pageNumber: number) => setCurrentPage(pageNumber)
+
   const togglePlatform = (platform: keyof typeof platformIcons) => {
     setSelectedPlatforms(prev => 
       prev.includes(platform) ? prev.filter(p => p !== platform) : [...prev, platform]
@@ -595,7 +604,7 @@ export default function Component() {
           }}
         >
           <AnimatePresence>
-            {filteredPosts.map(post => (
+            {currentPosts.map(post => (
               <motion.div
                 key={post.id}
                 layout
@@ -619,6 +628,27 @@ export default function Component() {
             ))}
           </AnimatePresence>
         </motion.div>
+
+        {/* Pagination */}
+        <div className="flex justify-center mt-8 space-x-4">
+          <button
+            onClick={() => paginate(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <span className="px-4 py-2 bg-gray-800 text-white rounded-md">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => paginate(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-800 text-white rounded-md disabled:opacity-50"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
       </div>
 
       {selectedPost && (
