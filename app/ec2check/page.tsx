@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 
 interface YouTubeResponse {
@@ -11,6 +11,14 @@ interface YouTubeResponse {
 
 interface RequestData {
   input_text: string;
+}
+
+interface LogEntry {
+  timestamp: string;
+  level: 'info' | 'error' | 'success' | 'warning';
+  stage: string;
+  message: string;
+  data?: any;
 }
 
 interface APIErrorLog {
@@ -27,40 +35,51 @@ interface APIErrorLog {
 }
 
 const MAX_RETRIES = 2;
-const TIMEOUT_DURATION = 30000; // 30 seconds
+const TIMEOUT_DURATION = 30000;
 
-const YouTubeContentGenerator = () => {
+const TerminalYouTubeGenerator = () => {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<APIErrorLog | null>(null);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
   const [data, setData] = useState<YouTubeResponse | null>(null);
+  const terminalRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom of terminal
+  useEffect(() => {
+    if (terminalRef.current) {
+      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    }
+  }, [logs]);
+
+  const addLog = (level: LogEntry['level'], stage: string, message: string, data?: any) => {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [${stage}]`, message, data || '');
+    
+    setLogs(prevLogs => [...prevLogs, {
+      timestamp,
+      level,
+      stage,
+      message,
+      data
+    }]);
+  };
 
   const generateErrorId = () => {
-    return `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const errorId = `err_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    addLog('info', 'ERROR_ID', `Generated new error ID: ${errorId}`);
+    return errorId;
   };
 
   const logAPIError = async (errorLog: APIErrorLog) => {
-    // Log to console for development
-    console.error('API Error Log:', {
-      ...errorLog,
-      timestamp: new Date(errorLog.timestamp).toLocaleString()
-    });
+    addLog('error', 'ERROR_LOGGING', 'API Error occurred', errorLog);
 
-    // In production, you might want to send this to your error tracking service
     try {
-      // Example: Send to your error logging endpoint
-      // await fetch('your-error-logging-endpoint', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(errorLog)
-      // });
-
-      // For now, store in localStorage for debugging
       const errorLogs = JSON.parse(localStorage.getItem('apiErrorLogs') || '[]');
       errorLogs.push(errorLog);
       localStorage.setItem('apiErrorLogs', JSON.stringify(errorLogs));
+      addLog('info', 'ERROR_STORAGE', 'Error stored in localStorage');
     } catch (e) {
-      console.error('Failed to save error log:', e);
+      addLog('error', 'ERROR_STORAGE', 'Failed to store error in localStorage', e);
     }
   };
 
@@ -68,11 +87,22 @@ const YouTubeContentGenerator = () => {
     requestData: RequestData, 
     retryCount: number = 0
   ): Promise<YouTubeResponse> => {
+    addLog('info', 'REQUEST', `Starting request (Attempt ${retryCount + 1}/${MAX_RETRIES + 1})`, requestData);
+
     const startTime = performance.now();
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_DURATION);
+    const timeoutId = setTimeout(() => {
+      addLog('warning', 'TIMEOUT', `Request timed out after ${TIMEOUT_DURATION}ms`);
+      controller.abort();
+    }, TIMEOUT_DURATION);
 
     try {
+      addLog('info', 'FETCH', 'Initiating fetch request', {
+        url: 'http://3.129.88.226:5000/youtube',
+        method: 'POST',
+        data: requestData
+      });
+
       const response = await fetch('http://3.129.88.226:5000/youtube', {
         method: 'POST',
         headers: {
@@ -86,8 +116,12 @@ const YouTubeContentGenerator = () => {
       const endTime = performance.now();
       const duration = endTime - startTime;
 
+      addLog('info', 'RESPONSE', 'Received response', {
+        status: response.status,
+        duration: `${duration.toFixed(2)}ms`
+      });
+
       if (!response.ok) {
-        // Handle different HTTP error status codes
         const errorLog: APIErrorLog = {
           id: generateErrorId(),
           timestamp: new Date().toISOString(),
@@ -98,30 +132,16 @@ const YouTubeContentGenerator = () => {
           errorMessage: `HTTP Error ${response.status}`,
           errorDetails: {
             statusText: response.statusText,
-            headers: Object.fromEntries(response.headers.entries())
           },
           requestDuration: duration,
           retryCount
         };
 
-        // Specific status code handling
-        switch (response.status) {
-          case 429:
-            errorLog.errorMessage = 'Rate limit exceeded';
-            break;
-          case 504:
-            errorLog.errorMessage = 'Gateway timeout';
-            break;
-          case 503:
-            errorLog.errorMessage = 'Service temporarily unavailable';
-            break;
-        }
-
         await logAPIError(errorLog);
 
-        // Retry on certain status codes
         if ([429, 503, 504].includes(response.status) && retryCount < MAX_RETRIES) {
-          const delay = Math.pow(2, retryCount) * 1000; // Exponential backoff
+          const delay = Math.pow(2, retryCount) * 1000;
+          addLog('warning', 'RETRY', `Retrying after ${delay}ms delay`);
           await new Promise(resolve => setTimeout(resolve, delay));
           return makeRequest(requestData, retryCount + 1);
         }
@@ -129,23 +149,14 @@ const YouTubeContentGenerator = () => {
         throw new Error(errorLog.errorMessage);
       }
 
+      addLog('info', 'PARSING', 'Parsing response');
       const result = await response.json();
       
       if (result.error) {
-        const errorLog: APIErrorLog = {
-          id: generateErrorId(),
-          timestamp: new Date().toISOString(),
-          endpoint: '/youtube',
-          requestData,
-          errorType: 'API_ERROR',
-          errorMessage: result.error,
-          requestDuration: duration,
-          retryCount
-        };
-        await logAPIError(errorLog);
         throw new Error(result.error);
       }
 
+      addLog('success', 'SUCCESS', 'Request completed successfully', result);
       return result;
     } catch (err) {
       clearTimeout(timeoutId);
@@ -166,151 +177,125 @@ const YouTubeContentGenerator = () => {
       if (err instanceof Error) {
         if (err.name === 'AbortError') {
           errorLog.errorType = 'REQUEST_TIMEOUT';
-          errorLog.errorMessage = 'Request timed out';
-          errorLog.errorDetails = { timeout: TIMEOUT_DURATION };
-        } else if (err.name === 'TypeError' && err.message.includes('Failed to fetch')) {
-          errorLog.errorType = 'NETWORK_ERROR';
-          errorLog.errorMessage = 'Network connection failed';
         }
       }
 
       await logAPIError(errorLog);
-
-      // Retry on network errors
-      if (errorLog.errorType === 'NETWORK_ERROR' && retryCount < MAX_RETRIES) {
-        const delay = Math.pow(2, retryCount) * 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
-        return makeRequest(requestData, retryCount + 1);
-      }
-
       throw new Error(errorLog.errorMessage);
     }
   };
 
   const generateContent = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLogs([]); // Clear previous logs
+    addLog('info', 'SUBMIT', 'Form submitted', { inputText });
     
     if (!inputText.trim()) {
-      const validationError: APIErrorLog = {
-        id: generateErrorId(),
-        timestamp: new Date().toISOString(),
-        endpoint: '/youtube',
-        requestData: { input_text: inputText },
-        errorType: 'VALIDATION_ERROR',
-        errorMessage: 'Empty input text',
-        requestDuration: 0,
-        retryCount: 0
-      };
-      await logAPIError(validationError);
-      setError(validationError);
+      addLog('error', 'VALIDATION', 'Empty input text detected');
       return;
     }
 
     setLoading(true);
-    setError(null);
-
-    const requestData: RequestData = {
-      input_text: inputText
-    };
+    const requestData: RequestData = { input_text: inputText };
 
     try {
       const result = await makeRequest(requestData);
       setData(result);
-      setError(null);
+      addLog('success', 'COMPLETE', 'Content generated successfully', result);
     } catch (err) {
+      addLog('error', 'ERROR', 'Content generation failed', err);
       setData(null);
-      if (error && 'id' in error) {
-        setError(error);
-      }
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-900 text-gray-100">
-      <div className="max-w-3xl mx-auto p-6">
-        <h1 className="text-3xl font-bold mb-6 text-white">YouTube Content Generator</h1>
-        
-        <form onSubmit={generateContent} className="space-y-4">
-          <div className="flex flex-col">
-            <label htmlFor="input_text" className="mb-2 font-medium text-gray-300">
-              Enter a topic for YouTube content:
-            </label>
-            <textarea
-              id="input_text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              rows={4}
-              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-md 
-                         text-gray-100 placeholder-gray-500 focus:outline-none 
-                         focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Enter your topic here..."
-            />
-          </div>
+  const renderLogEntry = (log: LogEntry, index: number) => {
+    const levelColors = {
+      info: 'text-blue-400',
+      error: 'text-red-400',
+      success: 'text-green-400',
+      warning: 'text-yellow-400'
+    };
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-md 
-                     hover:bg-blue-700 disabled:bg-gray-700 disabled:text-gray-400 
-                     disabled:cursor-not-allowed flex items-center justify-center 
-                     transition duration-200"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              'Generate Content'
-            )}
-          </button>
-        </form>
-
-        {error && (
-          <div className="mt-6 p-4 bg-red-900/50 border border-red-700 text-red-200 rounded-md">
-            <div className="flex items-center justify-between mb-2">
-              <p className="font-medium">Error Type: {error.errorType}</p>
-              <p className="text-sm opacity-75">ID: {error.id}</p>
-            </div>
-            <p className="mb-2">{error.errorMessage}</p>
-            {error.errorDetails && (
-              <pre className="text-sm mt-2 p-2 bg-red-900/30 rounded">
-                {JSON.stringify(error.errorDetails, null, 2)}
-              </pre>
-            )}
-            <div className="text-sm mt-2 flex justify-between opacity-75">
-              <span>Retry Count: {error.retryCount}</span>
-              <span>Duration: {error.requestDuration.toFixed(2)}ms</span>
-            </div>
-          </div>
+    return (
+      <div key={index} className="font-mono text-sm mb-1">
+        <span className="text-gray-500">[{new Date(log.timestamp).toLocaleTimeString()}]</span>
+        <span className={`ml-2 ${levelColors[log.level]}`}>[{log.stage}]</span>
+        <span className="ml-2 text-gray-300">{log.message}</span>
+        {log.data && (
+          <pre className="ml-8 text-xs text-gray-400 overflow-x-auto">
+            {JSON.stringify(log.data, null, 2)}
+          </pre>
         )}
+      </div>
+    );
+  };
 
-        {data && !error && (
-          <div className="mt-6 p-6 bg-gray-800 border border-gray-700 rounded-lg shadow-lg space-y-4">
-            <h3 className="text-xl font-bold text-white">Generated Content</h3>
-            
+  return (
+    <div className="min-h-screen bg-gray-900 text-gray-100 p-4">
+      <div className="max-w-4xl mx-auto space-y-4">
+        <div className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+          <h1 className="text-xl font-mono font-bold mb-4">YouTube Content Generator Terminal</h1>
+          
+          <form onSubmit={generateContent} className="space-y-4">
+            <div className="flex items-center space-x-2 font-mono">
+              <span className="text-green-400">$</span>
+              <input
+                type="text"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                className="flex-1 bg-gray-900 border border-gray-700 rounded px-3 py-2 
+                         text-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter topic for YouTube content..."
+                disabled={loading}
+              />
+              <button
+                type="submit"
+                disabled={loading}
+                className="bg-blue-600 text-white px-4 py-2 rounded
+                         hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed
+                         flex items-center space-x-2"
+              >
+                {loading ? (
+                  <>
+                    <Loader2 className="animate-spin h-4 w-4" />
+                    <span>Processing...</span>
+                  </>
+                ) : (
+                  <span>Generate</span>
+                )}
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <div 
+          ref={terminalRef}
+          className="bg-gray-800 border border-gray-700 rounded-lg p-4 h-[400px] overflow-y-auto"
+        >
+          {logs.map((log, index) => renderLogEntry(log, index))}
+        </div>
+
+        {data && (
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-4 font-mono">
+            <h2 className="text-lg font-bold mb-4">Generated Content</h2>
             {data.title && (
-              <div className="space-y-1">
-                <p className="font-semibold text-gray-300">Title:</p>
-                <p className="p-2 bg-gray-700 rounded text-gray-100">{data.title}</p>
+              <div className="mb-4">
+                <p className="text-green-400">$ Title:</p>
+                <p className="ml-4 text-gray-300">{data.title}</p>
               </div>
             )}
-
             {data.description && (
-              <div className="space-y-1">
-                <p className="font-semibold text-gray-300">Description:</p>
-                <p className="p-2 bg-gray-700 rounded text-gray-100 whitespace-pre-wrap">
-                  {data.description}
-                </p>
+              <div className="mb-4">
+                <p className="text-green-400">$ Description:</p>
+                <p className="ml-4 text-gray-300 whitespace-pre-wrap">{data.description}</p>
               </div>
             )}
-
             {data.thumbnail && (
-              <div className="space-y-1">
-                <p className="font-semibold text-gray-300">Thumbnail:</p>
-                <pre className="p-2 bg-gray-700 rounded text-gray-100 overflow-x-auto">
+              <div>
+                <p className="text-green-400">$ Thumbnail:</p>
+                <pre className="ml-4 text-gray-300 overflow-x-auto">
                   {data.thumbnail}
                 </pre>
               </div>
@@ -322,4 +307,4 @@ const YouTubeContentGenerator = () => {
   );
 };
 
-export default YouTubeContentGenerator;
+export default TerminalYouTubeGenerator;
