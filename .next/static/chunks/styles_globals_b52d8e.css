@@ -2629,6 +2629,10 @@ img, video {
   background-color: rgb(127 29 29 / var(--tw-bg-opacity));
 }
 
+.bg-red-900\/30 {
+  background-color: #7f1d1d4d;
+}
+
 .bg-red-900\/50 {
   background-color: #7f1d1d80;
 }
