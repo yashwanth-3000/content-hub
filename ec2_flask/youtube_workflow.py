@@ -4,10 +4,7 @@ from typing import Optional, Tuple
 from pydantic import BaseModel
 import openai
 
-#os.environ["OPENAI_API_KEY"] = "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"
 
-# Retrieve and print the API key
-#api_key = os.getenv("OPENAI_API_KEY")
 SAMBANOVA_API_KEY="6390a121-2903-43b0-ba6d-3cec7b5debe5"
 
 class YouTubeContentModel(BaseModel):
