@@ -5,7 +5,7 @@ from PIL import Image
 
 def generate_image_yt(prompt):
     # Set the API key directly in the code
-    api_token = 'r8_H0xmwZrYKjuLVkXPAlowvTs32zVD5713ED6DO'
+    api_token = ''
 
     if not api_token:
         print("Error: API token is not set.")
