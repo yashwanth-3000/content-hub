@@ -15,23 +15,19 @@ Follow these steps to set up and run the website locally:
 
 ### 1. Clone the Repository  
 ```  
-git clone https://github.com/<your-repo-name>.git  
-cd <your-repo-name>
+git clone https://github.com/yashwanth-3000/content-hub.git 
+cd content-hub
 ```
 
 ### 2. Run the Frontend Website
 The frontend is built using **Cursor** and requires **npm** to run.
-1. Navigate to the frontend directory:  
-   ```
-   cd frontend
-   ```
-2. Install dependencies:
+1. Install dependencies:
    ```
    npm install 
    ```
-3. Start the development server:
+2. Start the development server:
    ```
-   npm start  
+   npm run dev 
    ```
  4. Open your browser and go to::
    ```
