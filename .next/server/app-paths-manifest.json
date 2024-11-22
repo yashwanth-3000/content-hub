@@ -1,3 +1,8 @@
 {
-  "/ec2check/page": "app/ec2check/page.js"
+  "/page": "app/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/twitter/page": "app/twitter/page.js",
+  "/youtube/page": "app/youtube/page.js",
+  "/gallery/page": "app/gallery/page.js",
+  "/instagram/page": "app/instagram/page.js"
 }

@@ -278,14 +278,13 @@ export default function HomePage() {
               {/* Row 2 */}
               <div className="space-y-4">
                 <div className="overflow-hidden rounded-lg bg-gradient-to-br from-pink-500/30 to-blue-500/30">
-                  <iframe
+                  <video
                     className="w-full aspect-video"
                     src="https://youtube.com/shorts/L1IKSu2iMqo?si=O3R0TEZcis46oPJV"
                     title="YouTube video"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
+                    controls
+                    playsInline
+                  ></video>
                 </div>
                 <div className="overflow-hidden rounded-lg bg-gradient-to-br from-blue-500/30 to-purple-500/30">
                   <img src="https://i.imgur.com/3xxPzIs.png" alt="Placeholder image" className="w-full aspect-square object-cover" />
@@ -305,14 +304,13 @@ export default function HomePage() {
               {/* Row 4 */}
               <div className="space-y-4">
                 <div className="overflow-hidden rounded-lg bg-gradient-to-br from-blue-500/30 to-purple-500/30">
-                  <iframe
+                  <video
                     className="w-full aspect-[9/16]"
-                    src="https://youtu.be/y6oMutwJQCw?si=BmCpD9uTDUjMBJrb"
-                    title="YouTube video"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
+                    src="https://i.imgur.com/VUeU1xU.mp4"
+                    title="Vertical video"
+                    controls
+                    playsInline
+                  ></video>
                 </div>
                 <div className="overflow-hidden rounded-lg bg-gradient-to-br from-purple-500/30 to-pink-500/30">
                   <img src="/placeholder.svg?height=300&width=300" alt="Placeholder image" className="w-full aspect-square object-cover" />

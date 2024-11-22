@@ -1,47 +1,89 @@
-Project Story
+# Content Hub: Social Media Post and Video Reel Generator  
 
-## Inspiration:
-As the PR for my college’s student club, I constantly face a _challenge_: we host events frequently, often with _little notice_. This leaves me scrambling to create quality social media content on time, resulting in posts that don’t fully capture our events.  
-So I decided to join the *Redacted hackathon*; I saw it as the _perfect opportunity_ to solve this problem. But I had just *10 days* to make it happen.
+Welcome to the **Content Hub** repository! This project provides an intuitive platform to:  
+1. Generate creative **social media posts** based on user prompts.  
+2. Create engaging **video reels/shorts** with custom gameplay themes in minutes.  
 
+---
 
-## What We’ve Built:
+## Getting Started  
 
-With time ticking, I split the project into three core parts—*AI*, *frontend/backend*, and *deployment*—each working together to make the platform come alive:
+Follow these steps to set up and run the website locally:  
 
-## AI-Driven Content Creation
-The journey started with developing an *AI model* trained on *MASA’s Twitter data* from five active accounts focused on *crypto*, *Web3*, and *blockchain*.  
-I spent nearly _five days_ ensuring it was finely tuned to capture trends, sentiment, and popular discussions in these fields.  
-Using *Crew AI Agentic Workflow* and *OpenAI* for text generation, the model crafts high-quality, tailored content across platforms, creating _post-ready_ material for *Twitter*, *Instagram*, *LinkedIn*, and *YouTube*.
+### Prerequisites  
+- **Node.js** installed on your machine.  
 
-## Custom Image Generation with Flux Schnell
-For visual content, the AI creates image descriptions that are transformed into prompts, which are then sent to the *Replicate Flux Schnell API*.  
-This integration generates _unique images_ for each social media post, enhancing engagement and resonating with the crypto, Web3, and blockchain themes we wanted to highlight.
+### 1. Clone the Repository  
+```  
+git clone https://github.com/<your-repo-name>.git  
+cd <your-repo-name>
+```
 
-## Frontend Design & Backend with Flask
-I had a clear vision of the platform I wanted, but with no experience in building a website, especially with *Next.js* and backend development, I faced a _learning curve_.  
-Using *Cursor* and *Claude AI* as supports, I designed an accessible, user-friendly interface, and for the backend, I learnt *Flask* to manage the server-side logic. Together, they made for a streamlined platform, where users can easily generate and manage high-quality content with _minimal input_.
+### 2. Run the Frontend Website
+The frontend is built using **Cursor** and requires **npm** to run.
+1. Navigate to the frontend directory:  
+   ```
+   cd frontend
+   ```
+2. Install dependencies:
+   ```
+   npm install 
+   ```
+3. Start the development server:
+   ```
+   npm start  
+   ```
+ 4. Open your browser and go to::
+   ```
+   http://localhost:3000  
+   ```
 
-## Deployment
-Deployment was the final hurdle—and probably the _toughest_. With just *two days* left and almost _no_ experience in deployment, I had two options: push through and risk errors, or present my *project story*.  
-I chose to prioritize stability, even if it meant presenting the project _without_ a full deployment.  
-Going forward, I plan to *deploy* the platform completely, ensuring it’s robust, accessible, and ready for _real-world use_.
+### 3. Interact with the Website  
+The website is fully connected to a **publicly deployed AWS EC2 API endpoint**.  
 
+Type your prompt into the input box, and the platform will generate creative social media posts for platforms like:  
+- Twitter  
+- LinkedIn  
+- Instagram  
+- YouTube  
 
-## Potential Impact on *NEAR Ecosystem* 
+---
 
-This project has the potential to contribute _significantly_ to the *NEAR ecosystem*. The platform could serve as a _content engine_ for *MASA* and others within *NEAR*, helping them produce timely, high-quality _social media content_. This would allow Web3 projects to maintain an authentic voice, reach a broader audience, and engage more effectively within a decentralized, community-oriented landscape.
+## Video Reels/Shorts Generation Platform  
+To generate high-quality video reels or shorts:  
 
+1. Visit our dedicated website: [**AI Video Generator**](https://8501-01jd9b14swzjq7de9agtbz2e1t.cloudspaces.litng.ai/)  
+2. **How it works**:  
+   - Enter a prompt (e.g., *"GUYS! You Won't BELIEVE this new update!
+The graphics are INSANE!
+Watch what..."*).  
+   - Select a background gameplay from the available options.  
+   - Click **Generate**.  
 
-## What We Wanted to Add
-Though we built a powerful content generation platform, _time constraints_ kept us from a few additional features we had hoped to implement:
+### ! Note:  
+- Video generation takes approximately **3 minutes**.  
+- This is significantly faster than traditional manual video editing, which typically takes **3–6 hours**.
 
-- We wanted to add *real-time Twitter data integration* to keep the AI model updated with the latest trends and discussions, making the generated content even more relevant.
-- To further streamline the process, we envisioned a *one-click posting feature* that would allow users to publish the generated content directly to their social media accounts.
-- Another goal was a dedicated *Reels section* for Instagram, where the AI could generate _ready-to-upload reel videos_, helping users engage with audiences through video content.
+---
 
-## The Bigger Picture
-This hackathon taught me that innovation isn't just about _technical achievements_ - it's about _solving real problems for real people_.  
-Our platform isn't just generating content; it's *helping* creators and businesses maintain a consistent, professional presence across the social media landscape in the _rapidly evolving world_ of crypto, Web3 and blockchain.
+## Challenges We Faced  
 
-The journey from concept to creation was _challenging_, _enlightening_, and ultimately *rewarding*. While we may not have implemented every planned feature, we built something that _works_, something that _matters_, and something that can *grow*.
+Developing and deploying this platform presented some challenges:  
+
+### Frontend Development  
+- Built using **Cursor** and designed for seamless user interaction.  
+
+### Backend API Deployment  
+- Our backend API, built with **Flask**, is fully deployed on **AWS EC2**, providing 24/7 availability.  
+
+### HTTPS Restriction with Vercel  
+- The **EC2 backend** operates on **HTTP**, whereas **Vercel** requires **HTTPS** to communicate with API endpoints.  
+- Due to time constraints, we couldn’t resolve this issue fully.  
+
+#### Current Solution  
+- The website works perfectly in local environments by connecting to the EC2 backend.  
+- For now, we have not deployed the website on Vercel due to this limitation.  
+
+---
+
+Thank you for exploring **Content Hub**! We hope this platform helps you create amazing content effortlessly and efficiently. 
