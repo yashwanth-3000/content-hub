@@ -48,17 +48,23 @@ Type your prompt into the input box, and the platform will generate creative soc
 ## Video Reels/Shorts Generation Platform  
 To generate high-quality video reels or shorts:  
 
-1. Visit our dedicated website: [**AI Video Generator**](https://8501-01jd9b14swzjq7de9agtbz2e1t.cloudspaces.litng.ai/)  
+1. Visit our dedicated website: [**AI Video Generator**](https://8510-01jd9b14swzjq7de9agtbz2e1t.cloudspaces.litng.ai/)  
 2. **How it works**:  
-   - Enter a prompt (e.g., *"GUYS! You Won't BELIEVE this new update!
-The graphics are INSANE!
-Watch what..."*).  
+   - Enter a prompt  
    - Select a background gameplay from the available options.  
    - Click **Generate**.  
+
 
 ### ! Note:  
 - Video generation takes approximately **3 minutes**.  
 - This is significantly faster than traditional manual video editing, which typically takes **3–6 hours**.
+
+or 
+
+- you can run locally by using streamlit-reels dictory and enter your **api keys** then
+   ```
+   streamlit run app.py
+   ```
 
 ---
 
